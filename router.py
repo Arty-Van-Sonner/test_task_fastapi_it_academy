@@ -5,6 +5,7 @@ from repository import NoteRepository
 from schemas import SNoteCreate, SNote, SNoteDelete, SNoteUpdate, SNoteDelete
 
 router = APIRouter(
+    prefix='/notes',
     tags=['Notes'],
 )
 
@@ -47,24 +48,24 @@ async def get_note_by_id(note_id):
         raise HTTPException(status_code=404, detail='Note not found')
     return note
 
-@router.get('/notes')
+@router.get('/')
 async def get_notes() -> list[SNote]:
     notes = await NoteRepository.get_all_notes()
     return list(map(lambda note: SNote(**note.to_dict()), notes))
 
-@router.get('/notes/{note_id}', responses={404: note_not_found_response,})
+@router.get('/{note_id}', responses={404: note_not_found_response,})
 async def get_note(note_id: Annotated[int, Path(..., title=title_id_note)]) -> SNote:
     note = await get_note_by_id(note_id)
     return SNote(**note.to_dict())
 
-@router.post('/notes', status_code=201, responses={201: success_create_response})
+@router.post('/', status_code=201, responses={201: success_create_response})
 async def create_note(
     note: Annotated[SNoteCreate, Body(..., example=create_update_example)],
 ) -> SNote:
     note = await NoteRepository.create_note(note)
     return SNote(**note.to_dict())
 
-@router.put('/notes/{note_id}/update', responses={404: note_not_found_response,})
+@router.put('/{note_id}/update', responses={404: note_not_found_response,})
 async def update_note(
     note_id: Annotated[int, Path(..., title=title_id_note)], 
     update_data: Annotated[SNoteUpdate, Body(..., example=create_update_example)]
@@ -73,7 +74,7 @@ async def update_note(
     note = await NoteRepository.update_note(note, update_data)
     return SNote(**note.to_dict())
 
-@router.delete('/notes/{note_id}/delete', responses={404: note_not_found_response,})
+@router.delete('/{note_id}/delete', responses={404: note_not_found_response,})
 async def delete_note(
     note_id: Annotated[int, Path(..., title=title_id_note)], 
 ) -> SNoteDelete:
