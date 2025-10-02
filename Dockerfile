@@ -1,0 +1,11 @@
+FROM python:3.11.9
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+COPY . .
+
+RUN pip install -r requirements.txt
+RUN python main.py migrate
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

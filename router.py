@@ -27,6 +27,21 @@ note_not_found_response = {
     },
 }
 
+success_create_response = {
+    'description': 'Note created',
+    'content': {
+        'application/json': {
+            'example': {
+                'id': 3,
+                'title': 'Important note',
+                'body': 'When I leave, I need to turn off the iron'
+            },
+        },
+    },
+}
+
+title_id_note = 'ID note in database'
+
 async def get_note_by_id(note_id):
     note = await NoteRepository.get_note_by_id(note_id)
     if note is None:
@@ -38,12 +53,12 @@ async def get_notes() -> list[SNote]:
     notes = await NoteRepository.get_all_notes()
     return list(map(lambda note: SNote(**note.to_dict()), notes))
 
-@router.get('/notes/{note_id}', responses={404: note_not_found_response,},)
-async def get_note(note_id: Annotated[int, Path(...)]) -> SNote:
+@router.get('/notes/{note_id}', responses={404: note_not_found_response,})
+async def get_note(note_id: Annotated[int, Path(..., title=title_id_note)]) -> SNote:
     note = await get_note_by_id(note_id)
     return SNote(**note.to_dict())
 
-@router.post('/notes')
+@router.post('/notes', status_code=201, responses={201: success_create_response})
 async def create_note(
     note: Annotated[SNoteCreate, Body(..., example=create_update_example)],
 ) -> SNote:
@@ -52,7 +67,7 @@ async def create_note(
 
 @router.put('/notes/{note_id}/update', responses={404: note_not_found_response,})
 async def update_note(
-    note_id: Annotated[int, Path(...)], 
+    note_id: Annotated[int, Path(..., title=title_id_note)], 
     update_data: Annotated[SNoteUpdate, Body(..., example=create_update_example)]
 ) -> SNote:
     note = await get_note_by_id(note_id)
@@ -61,7 +76,7 @@ async def update_note(
 
 @router.delete('/notes/{note_id}/delete', responses={404: note_not_found_response,})
 async def delete_note(
-    note_id: Annotated[int, Path(...)], 
+    note_id: Annotated[int, Path(..., title=title_id_note)], 
 ) -> SNoteDelete:
     note = await get_note_by_id(note_id)
     note = await NoteRepository.delete_note(note)
