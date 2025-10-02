@@ -1,16 +1,18 @@
 import asyncio
 from pydantic import BaseModel
 
+class SNote(BaseModel):
+    id: int
+    title: str | None
+    body: str
+
 class SNoteCreate(BaseModel):
     title: str | None
     body: str
-    
-class SNote(SNoteCreate):
-    id: int
 
 class SNoteUpdate(SNoteCreate):
     pass
 
-class SNoutDelete(BaseModel):
+class SNoteDelete(BaseModel):
     id: int
-    detail: str = 'delete'
+    detail: str = 'Note deleted'
