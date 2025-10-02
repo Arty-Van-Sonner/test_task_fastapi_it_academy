@@ -5,8 +5,7 @@ from repository import NoteRepository
 from schemas import SNoteCreate, SNote, SNoteDelete, SNoteUpdate, SNoteDelete
 
 router = APIRouter(
-    prefix='/tasks',
-    tags=['Tasks'],
+    tags=['Notes'],
 )
 
 create_update_example = {
